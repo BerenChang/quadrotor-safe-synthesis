@@ -8,8 +8,7 @@ addpath('plotting');
 %% Load the desired trajectory
 % "BezierCurveParameters.mat"
 % "BezierCurveParameters_1.mat"
-% BezierCurveParameters = "BezierCurveParameters_3.mat";
-BezierCurveParameters = "GeneratedTrajectoryData.mat";
+BezierCurveParameters = "BezierCurveParameters_3.mat";
 load(BezierCurveParameters);
 
 %% Simulation parameters
@@ -77,13 +76,13 @@ param.psi_bar = 0.002;
 param.V1_bar = 0.01;
 
 %% get initial points
-init_n = 10;
+init_n = 10000;
 delta.x = 0.01; % random draw initial points
 delta.v = 0.1;
 delta.R = 0.1;
 delta.W = 0.1;
-[initial, param, M11] = get_initial_points(t, k, param, delta, init_n, Points_Array, tau);
-% [initial, param, M11] = get_initial_points_cond(t, k, param, delta, init_n, Points_Array, tau);
+% [initial, param, M11] = get_initial_points(t, k, param, delta, init_n, Points_Array, tau);
+[initial, param, M11] = get_initial_points_cond(t, k, param, delta, init_n, Points_Array, tau);
 
 %% plot initial points
 figure;
@@ -154,20 +153,20 @@ end
 %% Plot data
 
 % plot error
-% plot_error(t, e);
-% plot_error_norm(t, e);
+plot_error(t, e);
+plot_error_norm(t, e);
 
 % trajectory
 plot_traj(d.x, x_list, initial.Lp, X, false, false);
 
 % plot zoom-in trajectory
-% plot_traj(d.x, x_list, initial.Lp, X, false, true);
+plot_traj(d.x, x_list, initial.Lp, X, false, true);
 
 % lyapunov
-% plot_lyapunov(V1, V2, V, V_bound, uniform_V_bound);
+plot_lyapunov(V1, V2, V, V_bound, uniform_V_bound);
 
 % initial condition satisfaction
-% plot_initial_condition(t, param, ep_list, initial);
+plot_initial_condition(t, param, ep_list, initial);
 
 %% satisfaction of three initial condition, present in 3d
 plot_initial_condition_3d(param, initial);

@@ -1,5 +1,5 @@
-function desired_bezier = DesiredTrajectory(t,Points_Array,tau)
-
+function desired_bezier = DesiredTrajectory(t,Points_Array,tau,param)
+factorial_list = param.factorial_list;
 T=sum(tau);
 N = 0;
 CPoints = 0;
@@ -32,11 +32,11 @@ if t<=T
     n=size(Control_Points,2)-1;
     Tc=T(ind);
     T_p=Tc-tau(ind);
-    p= BezierPosition(n,t,Control_Points,T_p,Tc);
-    p_dot= BezierVelocity(n,t,Control_Points,T_p,Tc);
-    p_2dot= BezierAcceleration(n,t,Control_Points,T_p,Tc);
-    p_3dot= BezierJerk(n,t,Control_Points,T_p,Tc);
-    p_4dot= BezierSnap(n,t,Control_Points,T_p,Tc);
+    p= BezierPosition(n,t,Control_Points,T_p,Tc,factorial_list);
+    p_dot= BezierVelocity(n,t,Control_Points,T_p,Tc,factorial_list);
+    p_2dot= BezierAcceleration(n,t,Control_Points,T_p,Tc,factorial_list);
+    p_3dot= BezierJerk(n,t,Control_Points,T_p,Tc,factorial_list);
+    p_4dot= BezierSnap(n,t,Control_Points,T_p,Tc,factorial_list);
 
     N = n;
     CPoints = Control_Points;
@@ -65,67 +65,67 @@ desired_bezier.b1_2dot = w^2 * [-cos(w * t), -sin(w * t), 0]';
 end
 
 
-function y= BezierPosition(n,t,Control_Points,Tp,Tc)
+function y= BezierPosition(n,t,Control_Points,Tp,Tc,factorial_list)
 y = zeros(3,1);
 k=0;
 tt=(t-Tp)/(Tc-Tp);
 while k<=n
-    y =y+(factorial(n)/(factorial(k)*factorial(n-k)) * (1-tt)^(n-k) * tt^(k))*Control_Points(:,k+1);
+    y =y+(factorial_list(n+1)/(factorial_list(k+1)*factorial_list(n-k+1)) * (1-tt)^(n-k) * tt^(k))*Control_Points(:,k+1);
     k=k+1;
 end
 end
 
 
-function y= BezierVelocity(n,t,Control_Points,Tp,Tc)
+function y= BezierVelocity(n,t,Control_Points,Tp,Tc,factorial_list)
 y = zeros(3,1);
 k=0;
 tt=(t-Tp)/(Tc-Tp);
 delta=Tc-Tp;
 coef=n*(1/delta);
 while k<=n-1
-    y =y+(factorial(n-1)/(factorial(k)*factorial((n-1)-k)) * (1-tt)^((n-1)-k) * tt^(k))*(Control_Points(:,k+2)-Control_Points(:,k+1));
+    y =y+(factorial_list(n)/(factorial_list(k+1)*factorial_list((n-1)-k+1)) * (1-tt)^((n-1)-k) * tt^(k))*(Control_Points(:,k+2)-Control_Points(:,k+1));
     k=k+1;
 end
 y=coef*y;
 end
 
 
-function y= BezierAcceleration(n,t,Control_Points,Tp,Tc)
+function y= BezierAcceleration(n,t,Control_Points,Tp,Tc,factorial_list)
 y = zeros(3,1);
 k=0;
 tt=(t-Tp)/(Tc-Tp);
 delta=Tc-Tp;
 coef=n*(n-1)*((1/delta)^2);
 while k<=n-2
-    y =y+(factorial(n-2)/(factorial(k)*factorial((n-2)-k)) * (1-tt)^((n-2)-k) * tt^(k))*(Control_Points(:,k+3)-2*Control_Points(:,k+2)+Control_Points(:,k+1));
+    y =y+(factorial_list(n-1)/(factorial_list(k+1)*factorial_list((n-2)-k+1)) * (1-tt)^((n-2)-k) * tt^(k))*(Control_Points(:,k+3)-2*Control_Points(:,k+2)+Control_Points(:,k+1));
     k=k+1;
 end
 y=coef*y;
 end
 
 
-function y= BezierJerk(n,t,Control_Points,Tp,Tc)
+function y= BezierJerk(n,t,Control_Points,Tp,Tc,factorial_list)
 y = zeros(3,1);
 k=0;
 tt=(t-Tp)/(Tc-Tp);
 delta=Tc-Tp;
 coef=n*(n-1)*(n-2)*((1/delta)^3);
 while k<=n-3
-    y =y+(factorial(n-3)/(factorial(k)*factorial((n-3)-k)) * (1-tt)^((n-3)-k) * tt^(k))*(Control_Points(:,k+4)-3*Control_Points(:,k+3)+3*Control_Points(:,k+2)-Control_Points(:,k+1));
+    y =y+(factorial_list(n-2)/(factorial_list(k+1)*factorial_list((n-3)-k+1)) * (1-tt)^((n-3)-k) * tt^(k))*(Control_Points(:,k+4)-3*Control_Points(:,k+3)+3*Control_Points(:,k+2)-Control_Points(:,k+1));
     k=k+1;
 end
 y=coef*y;
 end
 
 
-function y= BezierSnap(n,t,Control_Points,Tp,Tc)
+function y= BezierSnap(n,t,Control_Points,Tp,Tc,factorial_list)
 y = zeros(3,1);
 k=0;
 tt=(t-Tp)/(Tc-Tp);
 delta=Tc-Tp;
 coef=n*(n-1)*(n-2)*(n-3)*((1/delta)^4);
 while k<=n-4
-    y =y+(factorial(n-4)/(factorial(k)*factorial((n-4)-k)) * (1-tt)^((n-4)-k) * tt^(k))*(Control_Points(:,k+5)-4*Control_Points(:,k+4)+6*Control_Points(:,k+3)-4*Control_Points(:,k+2)+Control_Points(:,k+1));
+    y =y+(factorial_list(n-3)/(factorial_list(k+1)*factorial_list((n-4)-k+1)) * (1-tt)^((n-4)-k) * tt^(k))*(Control_Points(:,k+5)-4*Control_Points(:,k+4)+6*Control_Points(:,k+3)-4*Control_Points(:,k+2)+Control_Points(:,k+1));
     k=k+1;
 end
 y=coef*y;

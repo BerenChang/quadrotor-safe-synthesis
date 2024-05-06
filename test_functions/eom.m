@@ -7,7 +7,7 @@ J = param.J;
 
 [~, v, R, W] = split_to_states(X);
 
-desired = DesiredTrajectory(t,Points_Array,tau);
+desired = DesiredTrajectory(t,Points_Array,tau,param);
 [f, M, ~, ~] = position_control(X, desired, k, param);
 
 xdot = v;
