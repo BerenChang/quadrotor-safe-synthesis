@@ -88,7 +88,15 @@ end
 end
 
 % uniform position bound
-initial.Lp = norm([1 0]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+% initial.Lp = norm([1 0]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+% initial.Lv = norm([0 1]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+% initial.Lf = norm([k.x k.v]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+
+load("/home/hybridsystemlab/Documents/MATLAB/quadrotor-safe-synthesis/TrajectoryGeneration/UniformBoundsData.mat", 'L_p', 'L_v', 'L_f', 'F_bound');
+initial.Lp = L_p;
+initial.Lv = L_v;
+initial.Lf = L_f;
+initial.F_bound = F_bound;
 
 initial.init_n = init_n;
 

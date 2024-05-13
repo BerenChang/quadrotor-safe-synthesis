@@ -1,4 +1,4 @@
-function plot_Lp(t, ep_list, initial)
+function plot_Lf(t, f_list, initial, B)
 
 colors = [0, 0.4470, 0.7410;     % blue
           0.8500, 0.3250, 0.0980; % orange
@@ -12,25 +12,23 @@ colors = [0, 0.4470, 0.7410;     % blue
           0, 0.5, 0];              % dark green 
 
 figure;
-
 hold on;
-yline(initial.Lp, 'Color', [0.8, 0.2, 0.4], 'LineWidth', 1.5);
+yline(initial.Lf + B, 'Color', [0.8, 0.2, 0.4], 'LineWidth', 1.5);
 for i = 1:initial.init_n
-    error_p = squeeze(ep_list(i,:));
+    fi = squeeze(f_list(i,:));
     % plot(t(1:200), error_p(1:200), 'Color', colors(i, :), 'LineWidth', 1.5);
-    plot(t, error_p, 'Color', colors(i, :), 'LineWidth', 1.5);
+    plot(t, fi, 'Color', colors(i, :), 'LineWidth', 1.5);
 end
 
 
 % Add labels and title
 xlabel('$t$ (second)','interpreter','latex');
-ylabel('$\|e_p\|$ (meter)','interpreter','latex');
+ylabel('$f$ (Newton)','interpreter','latex');
 % title('Norm of position error vs time','interpreter','latex');
 
 legend('Theoretical bound');
 
 % Adjust plot appearance
-
 grid on;
 box on;
 % set(gca, 'FontName', 'Arial');

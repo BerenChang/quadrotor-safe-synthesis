@@ -2,10 +2,10 @@ clc
 clear all
 close all
 
+rng default;
+
 load("UniformBoundsData.mat")
 
-
-rng default;
 
 % system dimension 
 n=3;
@@ -107,20 +107,6 @@ Nu=sXu(2);
 CuArray=0.5*(XulArray+XuuArray);
 DuArray=0.5*(XuuArray-XulArray)+delta_vector;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 tic
 
 %initializing the RRT Tree and associated tree structures
@@ -129,23 +115,12 @@ Safety_Radius_Tree=zeros(n,Nv);
 Nodes=ones(1,N_iter);
 Images=ones(1,N_iter);
 
-
-
 ind=1;
 ind_iter=0;
 Tree(:,1)=X0; % adding initial point to the tree.
 Safety_Radius_Tree(:,1)=Safety_Radius_M(Tree(:,1),Cs,Ds,CuArray,DuArray,alpha);
 
-
-
 dist_T=300;
-
-
-
-
-
-
-
 
 
 

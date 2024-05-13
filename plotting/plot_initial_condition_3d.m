@@ -1,6 +1,8 @@
 function plot_initial_condition_3d(param, initial)
 
-psi_y = 0 : param.norm_eW_bound/100 : param.norm_eW_bound;
+% param.norm_eW_bound = log(param.norm_eW_bound);
+
+psi_y = -min(initial.eW0_norm_list) : param.norm_eW_bound/100 : param.norm_eW_bound;
 psi_z = 0 : param.V1_bar/100 : param.V1_bar;
 [psi_Y, psi_Z] = meshgrid(psi_y, psi_z);
 psi_X = param.psi_bar*ones(size(psi_Y));
@@ -11,38 +13,48 @@ eW_x = 0 : param.psi_bar/100 : param.psi_bar;
 eW_Y = param.norm_eW_bound*ones(size(eW_X));
 
 
-V1_y = 0 : param.norm_eW_bound/100 : param.norm_eW_bound;
+V1_y = -min(initial.eW0_norm_list) : param.norm_eW_bound/100 : param.norm_eW_bound;
 %V1_y = 0 : min(initial.eW0_norm_list) : param.norm_eW_bound;
 V1_x = 0 : param.psi_bar/100 : param.psi_bar;
 [V1_X, V1_Y] = meshgrid(V1_x, V1_y);
 V1_Z = param.V1_bar*ones(size(V1_X));
 
 figure;
+% scatter3(initial.psi_0_list, ...
+%         log(initial.eW0_norm_list), ...
+%         initial.V1_0_list, ...
+%         'MarkerEdgeColor',[0.8500 0.3250 0.0980],...
+%         'MarkerFaceColor',[0.8500 0.3250 0.0980]);
+
 scatter3(initial.psi_0_list, ...
         initial.eW0_norm_list, ...
         initial.V1_0_list, ...
         'MarkerEdgeColor',[0.8500 0.3250 0.0980],...
         'MarkerFaceColor',[0.8500 0.3250 0.0980]);
+
 hold on;
 
 surf(psi_X, psi_Y, psi_Z, ...
     'EdgeColor','none', ...
-    'FaceColor',[0 0.4470 0.7410], ...
+    'FaceColor','r', ...
     'FaceAlpha',0.3);
 surf(eW_X, eW_Y, eW_Z, ...
     'EdgeColor','none', ...
-    'FaceColor',[0 0.4470 0.7410], ...
+    'FaceColor','g', ...
     'FaceAlpha',0.3);
 
 surf(V1_X, V1_Y, V1_Z, ...
     'EdgeColor','none', ...
-    'FaceColor',[0 0.4470 0.7410], ...
+    'FaceColor','b', ...
     'FaceAlpha',0.3);
-yscale log;
+% yscale log;
 
-xlabel("$\psi$", 'interpreter', 'latex');
-ylabel("$e_\omega$", 'interpreter', 'latex');
-zlabel("$V_1$", 'interpreter', 'latex');
+% Add legend
+legend('Initial points', '$\overline{\Psi}$', '$\overline{e_\omega}_0$', '$\overline{\mathcal{V}}_1$', 'interpreter', 'latex');
+
+xlabel("$\psi(0)$", 'interpreter', 'latex');
+ylabel("$e_\omega(0)$", 'interpreter', 'latex');
+zlabel("$\mathcal{V}_1(0)$", 'interpreter', 'latex');
 
 grid on;
 box on;

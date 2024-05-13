@@ -35,20 +35,20 @@ end
 
 for i=1:N
    center = [plan_traj(1,i),plan_traj(2,i),plan_traj(3,i)];
-   if i == 1 || norm(center-center_prev) > 0.003
+   % if i == 1 || norm(center-center_prev) > 0.00000003
        [X,Y,Z] = ellipsoid(center(1),center(2),center(3),Lp,Lp,Lp);
        surf(X,Y,Z,'FaceColor',color{8},'FaceAlpha',0.01,'EdgeColor','none'); %'FaceLighting','flat'
-   else
-       aa = 1;
-   end
-   center_prev = center;
+   % else
+   %     aa = 1;
+   % end
+   % center_prev = center;
 end
 
 % plotting the obstacles
 
 % Target set Xt 
 Xtl=[8;8;8]; 
-Xtu=[9;9;9];        
+Xtu=[10;10;10];        
 
 % Unsafe set Xu
 XulArray=[5;5;0];
@@ -66,8 +66,8 @@ XuuArray=[XuuArray,[10;6;10]];
 XulArray=[XulArray, [2;8;2]];
 XuuArray=[XuuArray,[4;10;7]];
 
-XulArray=[XulArray, [6;8;4]];
-XuuArray=[XuuArray,[8;10;6]];
+%XulArray=[XulArray, [6;8;4]];
+%XuuArray=[XuuArray,[8;10;6]];
 
 XulArray=[XulArray, [7;4;4]];
 XuuArray=[XuuArray,[9;6;6]];
@@ -81,8 +81,8 @@ XuuArray=[XuuArray,[4;6;9]];
 XulArray=[XulArray, [1;6;0]];
 XuuArray=[XuuArray,[2;8;10]];
 
-XulArray=[XulArray, [4;1;0]];
-XuuArray=[XuuArray,[6;2;10]];
+%XulArray=[XulArray, [4;1;0]];
+%XuuArray=[XuuArray,[6;2;10]];
 sXu=size(XulArray);
 Nu=sXu(2);
 

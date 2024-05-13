@@ -43,15 +43,14 @@ m=4.34;
 % % CDCPaper parameters
 vm=[5;5;5];
 am=[1;1;10];
-% 99.7258    4.6855   94.7636    2.0664    0.4296    0.1758
-kp=99.7258;
-kv=4.6855;
-kR=94.7636;
-kw=2.0664;
+kp=100;
+kv=1;
+kR=100;
+kw=1;
 psi_1=0.002;
 V1_0=0.01;
-c1=0.4296*min([sqrt(kp*m), 4*m*kp*kv/(kv^2+4*m*kp)]);
-c2=0.1758*min([sqrt(kR*lambda_m_J), 4*(lambda_m_J^2)*kR*kw/(lambda_M_J*(kw^2)+4*(lambda_m_J^2)*kR)]);
+c1=0.5*min([sqrt(kp*m), 4*m*kp*kv/(kv^2+4*m*kp)]);
+c2=0.35*min([sqrt(kR*lambda_m_J), 4*(lambda_m_J^2)*kR*kw/(lambda_M_J*(kw^2)+4*(lambda_m_J^2)*kR)]);
 
 
 

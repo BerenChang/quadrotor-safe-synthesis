@@ -1,5 +1,6 @@
 %%
-close all;
+
+% close all;
 addpath('aux_functions');
 addpath('test_functions');
 addpath('desired_trajectories');
@@ -9,7 +10,7 @@ addpath('plotting');
 % "BezierCurveParameters.mat"
 % "BezierCurveParameters_1.mat"
 % BezierCurveParameters = "BezierCurveParameters_3.mat";
-BezierCurveParameters = "GeneratedTrajectoryData.mat";
+BezierCurveParameters = "/home/hybridsystemlab/Documents/MATLAB/quadrotor-safe-synthesis/TrajectoryGeneration/GeneratedTrajectoryData.mat";
 load(BezierCurveParameters);
 
 %% Simulation parameters
@@ -32,58 +33,37 @@ param.m = 4.34;
 param.J_min = min(diag(param.J));
 param.J_max = max(diag(param.J));
 
-%% compute the desired trajectory
+%% compute the desired trajectory factorial
 Control_Points_temp=Points_Array(:,:,1);
 n_fact=size(Control_Points_temp,2)-1;
 param.factorial_list = factorial(1:n_fact);
 param.factorial_list = [1, param.factorial_list];
-%{
-desTraj.time_step = time_step;
-desTraj.t = t;
-desTraj.x = zeros(3,N);
-desTraj.v = zeros(3,N);
-desTraj.x_2dot = zeros(3,N);
-desTraj.x_3dot = zeros(3,N);
-desTraj.x_4dot = zeros(3,N);
-desTraj.w = zeros(1,N);
-desTraj.b1 = zeros(3,N);
-desTraj.b1_dot = zeros(3,N);
-desTraj.b1_2dot = zeros(3,N);
 
-for i = 1:N
-    desired_bezier = DesiredTrajectory(t(i),Points_Array,tau,param);
-    desTraj.x(:,i) = desired_bezier.x;
-    desTraj.v(:,i) = desired_bezier.v;
-    desTraj.x_2dot(:,i) = desired_bezier.x_2dot;
-    desTraj.x_3dot(:,i) = desired_bezier.x_3dot;
-    desTraj.x_4dot(:,i) = desired_bezier.x_4dot;
-    desTraj.w(i) = desired_bezier.w;
-    desTraj.b1(:,i) = desired_bezier.b1;
-    desTraj.b1_dot(:,i) = desired_bezier.b1_dot;
-    desTraj.b1_2dot(:,i) = desired_bezier.b1_2dot;
-end
-%}
 %% Controller gains
-k.x = 100;  % 10;
-k.v = 1;  % 8;
+k.x = 99.7258;  % 10;
+k.v = 4.6855;  % 8;
 
 % Attitude
-k.R = 100; % 0.003;  % 1.5;
-k.W = 1; % 0.0005;  % 0.35;
+k.R = 94.7636; % 0.003;  % 1.5;
+k.W = 2.0664; % 0.0005;  % 0.35;
 
 %% trajectory parameter
 param = get_B(t, param, Points_Array, tau);
 param.psi_bar = 0.002;
-param.V1_bar = 0.01;
+param.V1_bar = 0.1;
 
 %% get initial points
 init_n = 10;
-delta.x = 0.01; % random draw initial points
-delta.v = 0.1;
+delta.x = 0.3; % random draw initial points
+delta.v = 0.3;
 delta.R = 0.1;
-delta.W = 0.1;
+delta.W = 30;
+tic;
 [initial, param, M11] = get_initial_points(t, k, param, delta, init_n, Points_Array, tau);
+toc
 % [initial, param, M11] = get_initial_points_cond(t, k, param, delta, init_n, Points_Array, tau);
+
+plot_initial_condition_3d(param, initial);
 
 %% plot initial points
 figure;
@@ -99,6 +79,9 @@ scatter3(initial.initial_points(7,:),initial.initial_points(8,:),initial.initial
 ep_list = zeros(initial.init_n,N);
 eW_list = zeros(initial.init_n,N);
 x_list = zeros(initial.init_n,3,N);
+ev_list = zeros(initial.init_n,N);
+f_list = zeros(initial.init_n,N);
+v_list = zeros(initial.init_n, 3,N);
 
 comp_time = zeros(1,initial.init_n);
 
@@ -120,6 +103,7 @@ v = X(:, 4:6)';
 W = X(:, 7:9)';
 
 x_list(j,:,:) = x;
+v_list(j,:,:) = v;
 
 for i = 1:N
     R(:,:,i) = reshape(X(i,10:18), 3, 3);
@@ -146,6 +130,9 @@ end
 
 ep_list(j,:) = vecnorm(e.x);
 eW_list(j,:) = vecnorm(e.W);
+ev_list(j,:) = vecnorm(e.v);
+f_list(j,:) = f;
+
 end
 
 %% get Lyapunov values
@@ -173,9 +160,17 @@ plot_traj(d.x, x_list, initial.Lp, X, false, false);
 plot_initial_condition_3d(param, initial);
 
 %% plot position error within Lp bound
-plot_Lp(t, ep_list, initial);
+% plot_Lp(t, ep_list, initial);
+% plot_Lv(t, ev_list, initial);
+% plot_Lf(t, f_list, initial, param.B);
+
+plot_pvf(t, ep_list, ev_list, f_list, initial);
+
+%% v_max
+
 
 %% comparison between two position error bounds from stability analysis
+%{
 % Plot each curve with different colors and line styles
 % Generate distinguishable colors
 colors = [0, 0.4470, 0.7410;     % blue
@@ -203,7 +198,7 @@ end
 % Add labels and title
 xlabel('$t$ (second)','interpreter','latex');
 ylabel('$\|e_p\|$ (meter)','interpreter','latex');
-% title('Norm of position error vs time','interpreter','latex');
+title('Norm of position error vs time','interpreter','latex');
 
 % Add legend
 legend('Bound1','Bound2');
@@ -212,7 +207,7 @@ legend('Bound1','Bound2');
 yscale log;
 grid on;
 box on;
-% set(gca, 'FontName', 'Arial');
+set(gca, 'FontName', 'Arial');
 set(gca, 'FontSize', 12);
 set(gca, 'LineWidth', 1.2);
 set(gca, 'TickDir', 'out');
@@ -222,4 +217,5 @@ set(gca, 'YMinorTick', 'on');
 set(gca,'TickLabelInterpreter','latex');
 
 hold off;
+%}
 
