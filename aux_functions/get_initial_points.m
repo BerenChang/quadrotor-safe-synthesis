@@ -1,4 +1,4 @@
-function [initial, param, M11] = get_initial_points(t, k, param, delta, init_n, Points_Array, tau)
+function [initial, param, M11] = get_initial_points(t, k, am, param, delta, init_n, Points_Array, tau, show_count)
 
 initial.initial_points = zeros(18, init_n);
 initial.initial_eul = zeros(3, init_n);
@@ -82,22 +82,19 @@ if condition1 && condition2 && condition3
     initial.eW0_norm_list(initial_point_count) = norm(eW_0)^2;
     initial.initial_points(:, initial_point_count) = X0;
     initial.initial_eul(:, initial_point_count) = eul0;
-    initial_point_count = initial_point_count + 1
+    initial_point_count = initial_point_count + 1;
+    if show_count
+        initial_point_count - 1
+    end
 end
 
 end
 
 % uniform position bound
-% initial.Lp = norm([1 0]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
-% initial.Lv = norm([0 1]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
-% initial.Lf = norm([k.x k.v]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
-
-load("/home/hybridsystemlab/Documents/MATLAB/quadrotor-safe-synthesis/TrajectoryGeneration/UniformBoundsData.mat", 'L_p', 'L_v', 'L_f', 'F_bound');
-initial.Lp = L_p;
-initial.Lv = L_v;
-initial.Lf = L_f;
-initial.F_bound = F_bound;
-
+initial.Lp = norm([1 0]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+initial.Lv = norm([0 1]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+initial.Lf = norm([k.x k.v]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
+initial.F_bound = param.m*norm(am) + initial.Lf;
 initial.init_n = init_n;
 
 end

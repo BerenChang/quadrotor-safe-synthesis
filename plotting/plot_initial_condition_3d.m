@@ -58,12 +58,17 @@ zlabel("$\mathcal{V}_1(0)$", 'interpreter', 'latex');
 
 grid on;
 box on;
+set(gca,'ticklabelinterpreter','latex');
 set(gca, 'FontSize', 12);
 set(gca, 'LineWidth', 1.2);
 set(gca, 'TickDir', 'out');
 set(gca, 'TickLength', [0.02, 0.02]);
 set(gca, 'XMinorTick', 'on');
 set(gca, 'YMinorTick', 'on');
+set(gca, 'Ydir', 'reverse');
 hold off;
+
+% Set view
+view(-100,30)
 
 end

@@ -4,21 +4,21 @@ function plot_traj(plan_traj, real_traj, Lp, X, body_axis, zoom_in)
 % Lp: the radius of safe tube
 % body_axis: Boolean. show attitude
 % X: full desired states
-% zoom_in: Boolean. plot the zoom-in traj to show convergence
+% zoom_in: number treated as Boolean. plot the zoom-in traj to show convergence
+%          0 for no zoom_in image. positive integer for first 1/zoom_in
+%          section of trajectories
+
+figure;
+ax1 = axes('position', [0.13 0.13 0.85 0.85]);
 
 size_traj = size(real_traj);
 n_traj = size_traj(1);
 N = size_traj(3);
 color = {'k','b',[0 0.5 0],'r',[0.8 0.9 0.9741],[0.8 0.98 0.9],[1 0.8 0.8],[0.7, 0.7 1]};
 
-figure;
-%{
-if zoom_in
-    crop_index = size_traj(2);
-    p
-    plot3(plan_traj(1,:), plan_traj(2,:), plan_traj(3,:), 'black', 'LineWidth', 1,'LineStyle','--');
-%}
+view(-100,30)
 plot3(plan_traj(1,:), plan_traj(2,:), plan_traj(3,:), 'black', 'LineWidth', 0.5,'LineStyle','--');
+
 hold on;
 
 if body_axis
@@ -101,7 +101,36 @@ zlabel('$z$ [m]','interpreter','latex');
 box on;
 grid on;
 
-% Set view
-view(3);
+view(-100,30)
+
+if zoom_in
+    ax2 = axes('position', [0.65 0.6 0.3 0.3]);
+    crop_index = floor(size_traj(3)/zoom_in);
+    plot3(ax2, plan_traj(1,1:crop_index), ...
+        plan_traj(2,1:crop_index), ...
+        plan_traj(3,1:crop_index), ...
+        'black', 'LineWidth', 1,'LineStyle','--');
+    hold on;
+
+    for i=1:n_traj
+        plot3(ax2, squeeze(real_traj(i,1,1:crop_index)), ...
+            squeeze(real_traj(i,2,1:crop_index)), ...
+            squeeze(real_traj(i,3,1:crop_index)), 'blue', 'LineWidth', 0.5);
+    end
+
+    for i=1:crop_index
+        center = [plan_traj(1,i),plan_traj(2,i),plan_traj(3,i)];
+        [X,Y,Z] = ellipsoid(center(1),center(2),center(3),Lp,Lp,Lp);
+        surf(ax2, X,Y,Z,'FaceColor',color{8},'FaceAlpha',0.005,'EdgeColor','none'); %'FaceLighting','flat'
+    end
+
+    box on;
+    grid on;
+    hold off;
+    view(-100,30)
+end
+
+annotation('rectangle', [0.85 0.2 0.1 0.1], 'Color', 'black')
+annotation('arrow', [0.88 0.85], [0.3 0.55])
 
 end
