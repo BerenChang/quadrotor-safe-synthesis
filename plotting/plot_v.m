@@ -36,13 +36,14 @@ for i = 1:initial.init_n
     plot(t(1:crop_index), vi(1:crop_index), 'Color', colors(i, :), 'LineWidth', 1.5);
 end
 
+ylim([0 1.1*vm(1)]);
 
 % Add labels and title
-xlabel('$t$ (second)','interpreter','latex');
-ylabel('$|v_x|$ (m/s)','interpreter','latex');
+xlabel('$t$ [s]','interpreter','latex');
+ylabel('$|v_1|$ [m/s]','interpreter','latex');
 % title('Norm of position error vs time','interpreter','latex');
 
-legend('${|v_x|}_{max}$', 'interpreter','latex');
+legend('${|v_{\max,1}|}$', 'interpreter','latex');
 
 % Adjust plot appearance
 grid on;
@@ -68,13 +69,14 @@ for i = 1:initial.init_n
     plot(t(1:crop_index), vi(1:crop_index), 'Color', colors(i, :), 'LineWidth', 1.5);
 end
 
+ylim([0 1.1*vm(2)]);
 
 % Add labels and title
-xlabel('$t$ (second)','interpreter','latex');
-ylabel('$|v_y|$ (m/s)','interpreter','latex');
+xlabel('$t$ [s]','interpreter','latex');
+ylabel('$|v_2|$ [m/s]','interpreter','latex');
 % title('Norm of position error vs time','interpreter','latex');
 
-legend('${|v_y|}_{max}$', 'interpreter','latex');
+legend('${|v_{\max,2}|}$', 'interpreter','latex');
 
 % Adjust plot appearance
 grid on;
@@ -100,13 +102,14 @@ for i = 1:initial.init_n
     plot(t(1:crop_index), vi(1:crop_index), 'Color', colors(i, :), 'LineWidth', 1.5);
 end
 
+ylim([0 1.1*vm(3)]);
 
 % Add labels and title
-xlabel('$t$ (second)','interpreter','latex');
-ylabel('$|v_z|$ (m/s)','interpreter','latex');
+xlabel('$t$ [s]','interpreter','latex');
+ylabel('$|v_3|$ [m/s]','interpreter','latex');
 % title('Norm of position error vs time','interpreter','latex');
 
-legend('${|v_z|}_{max}$', 'interpreter','latex');
+legend('${|v_{\max,3}|}$', 'interpreter','latex');
 
 % Adjust plot appearance
 grid on;

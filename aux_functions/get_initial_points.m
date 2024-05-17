@@ -1,16 +1,12 @@
 function [initial, param, M11] = get_initial_points(t, k, am, param, delta, init_n, Points_Array, tau, show_count)
 
+rng("default");
+
 initial.initial_points = zeros(18, init_n);
 initial.initial_eul = zeros(3, init_n);
 initial.psi_0_list = zeros(1,init_n);
 initial.V1_0_list = zeros(1,init_n);
 initial.eW0_norm_list = zeros(1,init_n);
-
-% lyapunov parameters
-param.c1 = min([sqrt(k.x*param.m), 4*param.m*k.x*k.v / (k.v^2+4*param.m*k.x)]);
-param.c2 = min([sqrt(k.R*param.J_min), 4*param.J_min^2*k.R*k.W / (param.J_max*k.W^2+4*param.J_min^2*k.R)]);
-param.c1 = 0.5*param.c1;
-param.c2 = 0.35*param.c2;
 
 % error bound
 M11 = 0.5*[k.x, -param.c1; 
@@ -35,13 +31,12 @@ param.tm = log(param.alpha0/2/param.beta)/(param.alpha0/2-param.beta);
 
 % Bounds
 param.norm_eW_bound = 2*k.R/param.J_max*(1 - param.psi_bar);
-param.V2_bar = k.R*param.psi_bar + 2*param.c2*sqrt(k.R*param.psi_bar*(1-param.psi_bar)/param.J_max);
+param.V2_bar = (k.R*param.psi_bar + 2*param.c2*sqrt(k.R*param.alpha_psi*(1-param.alpha_psi)/param.J_min))*param.psi_bar;
 
 initial_point_count = 1;
 while initial_point_count ~= init_n+1
 
 % Initial conditions
-% rng("default");
 
 xd_0 = DesiredTrajectory(t(1),Points_Array,tau,param);
 x0 = xd_0.x + delta.x*(2*rand(3,1)-1);  % [0, 0, 0]';

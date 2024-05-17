@@ -10,8 +10,8 @@ gamma2 = opt_k(6);
 J = param.J;
 m = param.m;
 
-lambda_m_J = min(eig(J));
-lambda_M_J = max(eig(J));
+lambda_m_J = param.J_min;
+% lambda_M_J = param.J_max;
 
 am = anneal_options.am;
 % B = m*norm(am);
@@ -86,6 +86,6 @@ output.c1 = c1;
 output.c2 = c2;
 output.V2_0 = V2_0;
 output.t_cpu_bounds = t_cpu_bounds;
-output.initial_ep = sqrt(V1_0 / 3 / (kp+m+c1))
+output.initial_ep = sqrt(V1_0 / 3 / (kp+m+c1));
 
 end

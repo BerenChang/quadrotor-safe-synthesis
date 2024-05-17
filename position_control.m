@@ -107,6 +107,8 @@ calculated.W_dot = Wd_dot;
 calculated.W3 = W3;
 calculated.W3_dot = W3_dot;
 
+calculated.Fd3 = F(3);
+
 calculated.Rd_dot = Rd_dot;
 calculated.Rd_ddot = Rd_ddot;
 end

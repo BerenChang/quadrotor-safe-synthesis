@@ -13,7 +13,7 @@ param.g = 9.81;
 % param.J = diag([0.02, 0.02, 0.04]);
 % param.m = 2;
 
-% param.J = diag([1.43e-5, 1.43e-5, 2.89e-5]);
+% param.J = diag([2.31e-5, 2.31e-5, 4.125e-5]);
 % param.m = 0.033;
 
 param.J = diag([0.0820, 0.0845, 0.1377]);
@@ -85,6 +85,7 @@ x_list = zeros(initial.init_n,3,N);
 ev_list = zeros(initial.init_n,N);
 f_list = zeros(initial.init_n,N);
 v_list = zeros(initial.init_n, 3,N);
+Fd3_list = zeros(initial.init_n,N);
 
 comp_time = zeros(1,initial.init_n);
 
@@ -129,6 +130,8 @@ for i = 1:N
     d.R(:,:,i) = calc.R;
     % d.R_dot(:,:,i) = calc.Rd_dot;
     % d.R_ddot(:,:,i) = calc.Rd_ddot;
+
+    F
 end
 
 ep_list(j,:) = vecnorm(e.x);
@@ -143,11 +146,9 @@ end
 
 %% Plot data
 
+% initial
 plot_initial_condition_3d(param, initial);
-
 plot_initial_position(initial);
-
-%%
 plot_rotm(initial);
 
 % trajectory
@@ -156,9 +157,9 @@ plot_traj(d.x, x_list, annealing_output.opt_bounds.Lp, X, false, 10);
 % lyapunov
 % plot_lyapunov(V1, V2, V, V_bound, uniform_V_bound);
 
-%% plot position error within Lp bound
+% plot position error within Lp bound
 plot_pvf(t, ep_list, ev_list, f_list, initial, annealing_output.opt_bounds, 10);
 
-%% plot vx vy vz and v_bound
+% plot vx vy vz and v_bound
 plot_v(t, v_list, initial, anneal_options.vm, 1);
 

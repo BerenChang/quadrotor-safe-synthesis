@@ -6,14 +6,14 @@ addpath('desired_trajectories');
 addpath('plotting');
 addpath('gain_tuning');
 addpath('TrajectoryGeneration_Modified');
-
+rng('default');
 %% Quadrotor parameters
 param.g = 9.81;
 
 % param.J = diag([0.02, 0.02, 0.04]);
 % param.m = 2;
 
-% param.J = diag([1.43e-5, 1.43e-5, 2.89e-5]);
+% param.J = diag([2.31e-5, 2.31e-5, 4.125e-5]);
 % param.m = 0.033;
 
 param.J = diag([0.0820, 0.0845, 0.1377]);
@@ -47,7 +47,6 @@ k.W = annealing_output.opt_k(4); % 0.0005;  % 0.35;
 %% trajectory generation
 % t_cpu_bounds = annealing_output.opt_bounds.t_cpu_bounds;
 generated_trajectory = trajectory_synthesis(annealing_output, anneal_options, param);
-generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, param);
 
 %% Simulation parameters
 T = sum(generated_trajectory.tau);
@@ -65,6 +64,7 @@ param.factorial_list = [1, param.factorial_list];
 param = get_B(t, param, generated_trajectory.Points_Array, generated_trajectory.tau);
 param.psi_bar = anneal_options.psi_bar;
 param.V1_bar = anneal_options.V1_0;
+param.alpha_psi = anneal_options.alpha_psi;
 
 %% get initial points
 init_n = 20;
@@ -72,6 +72,8 @@ delta.x = 0.15; % random draw initial points
 delta.v = 0.15;
 delta.R = 0.15;
 delta.W = 30;
+param.c1 = annealing_output.opt_bounds.c1;
+param.c2 = annealing_output.opt_bounds.c2;
 tic;
 [initial, param, M11] = get_initial_points(t, k, anneal_options.am, param, ...
     delta, init_n, generated_trajectory.Points_Array, generated_trajectory.tau, true);
@@ -85,6 +87,7 @@ x_list = zeros(initial.init_n,3,N);
 ev_list = zeros(initial.init_n,N);
 f_list = zeros(initial.init_n,N);
 v_list = zeros(initial.init_n, 3,N);
+Fd3_list = zeros(initial.init_n,N);
 
 comp_time = zeros(1,initial.init_n);
 
@@ -129,6 +132,8 @@ for i = 1:N
     d.R(:,:,i) = calc.R;
     % d.R_dot(:,:,i) = calc.Rd_dot;
     % d.R_ddot(:,:,i) = calc.Rd_ddot;
+
+    Fd3_list(j,i) = calc.Fd3;
 end
 
 ep_list(j,:) = vecnorm(e.x);
@@ -139,7 +144,7 @@ f_list(j,:) = f;
 end
 
 %% get Lyapunov values
-[V1, V2, V, V_bound, uniform_V_bound, error_bound_p_list] = get_lyapunov(t, k, N, param, e, R, d, M11);
+lyap = get_lyapunov(t, k, N, param, e, R, d, M11);
 
 %% Plot data
 
@@ -148,6 +153,9 @@ plot_initial_condition_3d(param, initial);
 plot_initial_position(initial);
 plot_rotm(initial);
 
+% environment and desired trajectory
+generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, param);
+
 % trajectory
 plot_traj(d.x, x_list, annealing_output.opt_bounds.Lp, X, false, 10);
 
@@ -155,7 +163,7 @@ plot_traj(d.x, x_list, annealing_output.opt_bounds.Lp, X, false, 10);
 % plot_lyapunov(V1, V2, V, V_bound, uniform_V_bound);
 
 % plot position error within Lp bound
-plot_pvf(t, ep_list, ev_list, f_list, initial, annealing_output.opt_bounds, 10);
+plot_pvf(t, ep_list, ev_list, f_list, Fd3_list, initial, annealing_output.opt_bounds, 10);
 
 % plot vx vy vz and v_bound
 plot_v(t, v_list, initial, anneal_options.vm, 1);
