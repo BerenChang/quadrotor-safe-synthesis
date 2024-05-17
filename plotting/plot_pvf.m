@@ -96,7 +96,7 @@ nexttile
 hold on;
 yline(bounds.F_bound, 'Color', [0.8, 0.2, 0.4], 'LineWidth', 1.5);
 for i = 1:initial.init_n
-    fi = squeeze(f_list(i,:));
+    fi = abs(squeeze(f_list(i,:)));
     % plot(t(1:200), error_p(1:200), 'Color', colors(i, :), 'LineWidth', 1.5);
     plot(t(1:crop_index), fi(1:crop_index), 'Color', colors(i, :), 'LineWidth', 1.5);
 end
@@ -105,10 +105,10 @@ ylim([0.95*min(f_list,[],"all") 1.01*bounds.F_bound]);
 
 % Add labels and title
 xlabel('$t$ [s]','interpreter','latex');
-ylabel('$f$ [N]','interpreter','latex');
+ylabel('$|f|$ [N]','interpreter','latex');
 % title('Norm of position error vs time','interpreter','latex');
 
-legend('$\overline{\mathbf{f}}$','interpreter','latex');
+legend('$\overline{\mathcal{F}}$','interpreter','latex');
 
 % Adjust plot appearance
 grid on;

@@ -67,15 +67,15 @@ param.V1_bar = anneal_options.V1_0;
 param.alpha_psi = anneal_options.alpha_psi;
 
 %% get initial points
-init_n = 20;
+init_n = 200;
 delta.x = 0.15; % random draw initial points
 delta.v = 0.15;
-delta.R = 0.15;
-delta.W = 30;
+delta.R = 0.5;
+delta.W = 0.5;
 param.c1 = annealing_output.opt_bounds.c1;
 param.c2 = annealing_output.opt_bounds.c2;
 tic;
-[initial, param, M11] = get_initial_points(t, k, anneal_options.am, param, ...
+initial = get_initial_points(t, k, anneal_options, param, ...
     delta, init_n, generated_trajectory.Points_Array, generated_trajectory.tau, true);
 toc
 % [initial, param, M11] = get_initial_points_cond(t, k, param, delta, init_n, Points_Array, tau);
@@ -88,6 +88,9 @@ ev_list = zeros(initial.init_n,N);
 f_list = zeros(initial.init_n,N);
 v_list = zeros(initial.init_n, 3,N);
 Fd3_list = zeros(initial.init_n,N);
+lyap_list_V = zeros(initial.init_n,N);
+lyap_list_V1 = zeros(initial.init_n,N);
+lyap_list_V2 = zeros(initial.init_n,N);
 
 comp_time = zeros(1,initial.init_n);
 
@@ -132,7 +135,6 @@ for i = 1:N
     d.R(:,:,i) = calc.R;
     % d.R_dot(:,:,i) = calc.Rd_dot;
     % d.R_ddot(:,:,i) = calc.Rd_ddot;
-
     Fd3_list(j,i) = calc.Fd3;
 end
 
@@ -141,15 +143,18 @@ eW_list(j,:) = vecnorm(e.W);
 ev_list(j,:) = vecnorm(e.v);
 f_list(j,:) = f;
 
-end
+lyap = get_lyapunov(k, N, param, e, R, d);
+lyap_list_V(j,:) = lyap.V;
+lyap_list_V1(j,:) = lyap.V1;
+lyap_list_V2(j,:) = lyap.V2;
 
-%% get Lyapunov values
-lyap = get_lyapunov(t, k, N, param, e, R, d, M11);
+end
 
 %% Plot data
 
 % initial
-plot_initial_condition_3d(param, initial);
+plot_initial_condition_3d(k, anneal_options, initial);
+plot_initial_position_attitude(initial);
 plot_initial_position(initial);
 plot_rotm(initial);
 
@@ -160,7 +165,8 @@ generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, p
 plot_traj(d.x, x_list, annealing_output.opt_bounds.Lp, X, false, 10);
 
 % lyapunov
-% plot_lyapunov(V1, V2, V, V_bound, uniform_V_bound);
+% lyap = get_lyapunov(t, k, N, param, e, R, d, M11);
+plot_lyapunov(t, lyap_list_V1, annealing_output.opt_bounds.Lu);
 
 % plot position error within Lp bound
 plot_pvf(t, ep_list, ev_list, f_list, Fd3_list, initial, annealing_output.opt_bounds, 10);

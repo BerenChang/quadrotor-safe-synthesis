@@ -1,4 +1,4 @@
-function lyap = get_lyapunov(t, k, N, param, e, R, d, M11)
+function lyap = get_lyapunov(k, N, param, e, R, d)
 
 psi_list = zeros(1,N);
 for i = 1:N
@@ -15,11 +15,11 @@ for i = 1:N
 end
 
 V = V1 + V2;
-uniform_V_bound = (Lu(V1(1), V2(1), param))^2;
+% uniform_V_bound = (Lu(V1(1), V2(1), param))^2;
 
 lyap.V1 = V1;
 lyap.V2 = V2;
 lyap.V = V;
-lyap.uniform_V_bound = uniform_V_bound;
+% lyap.uniform_V_bound = uniform_V_bound;
 
 end

@@ -1,7 +1,9 @@
-function [initial, param, M11] = get_initial_points(t, k, am, param, delta, init_n, Points_Array, tau, show_count)
+function initial = get_initial_points(t, k, anneal_options, ...
+    param, delta, init_n, Points_Array, tau, show_count)
 
 rng("default");
 
+initial.init_n = init_n;
 initial.initial_points = zeros(18, init_n);
 initial.initial_eul = zeros(3, init_n);
 initial.psi_0_list = zeros(1,init_n);
@@ -9,6 +11,7 @@ initial.V1_0_list = zeros(1,init_n);
 initial.eW0_norm_list = zeros(1,init_n);
 
 % error bound
+%{
 M11 = 0.5*[k.x, -param.c1; 
         -param.c1, param.m];
 M12 = 0.5*[k.x, param.c1; 
@@ -28,10 +31,7 @@ param.beta = min(eig(inv(sqrtm(M22))*W2*inv(sqrtm(M22))))/2;
 param.alpha2 = param.B*norm([param.c1/param.m 1]*inv(sqrtm(M11)))*norm([1 0]*inv(sqrtm(M21)));
 param.tm = log(param.alpha0/2/param.beta)/(param.alpha0/2-param.beta);
 % tm = min([tm_uncrop, T]);
-
-% Bounds
-param.norm_eW_bound = 2*k.R/param.J_max*(1 - param.psi_bar);
-param.V2_bar = (k.R*param.psi_bar + 2*param.c2*sqrt(k.R*param.alpha_psi*(1-param.alpha_psi)/param.J_min))*param.psi_bar;
+%}
 
 initial_point_count = 1;
 while initial_point_count ~= init_n+1
@@ -64,17 +64,19 @@ eR_0 = error0.R;
 eW_0 = error0.W;
 Rd_0 = calculated0.R;
 psi_0 = get_psi(R0, Rd_0);
-[V1_0, V2_0] = lyapunov(param, k, ex_0, ev_0, eR_0, eW_0, psi_0);
-V_0 = V1_0 + V2_0;
+[V1_0, ~] = lyapunov(param, k, ex_0, ev_0, eR_0, eW_0, psi_0);
+% V_0 = V1_0 + V2_0;
 
-condition1 = (psi_0 <= param.psi_bar);
-condition2 = (norm(eW_0)^2 <= param.norm_eW_bound);
-condition3 = (V1_0 <= param.V1_bar);
-    
+condition1 = (psi_0 <= anneal_options.alpha_psi * anneal_options.psi_bar);
+condition2 = (0.5*eW_0'*param.J*eW_0 <= k.R * (1 - anneal_options.alpha_psi) * anneal_options.psi_bar);
+condition3 = (V1_0 <= anneal_options.V1_0);
+
+[condition1, condition2, condition3];
+
 if condition1 && condition2 && condition3
     initial.psi_0_list(initial_point_count) = psi_0;
     initial.V1_0_list(initial_point_count) = V1_0;
-    initial.eW0_norm_list(initial_point_count) = norm(eW_0)^2;
+    initial.eW0_norm_list(initial_point_count) = 0.5*eW_0'*param.J*eW_0;
     initial.initial_points(:, initial_point_count) = X0;
     initial.initial_eul(:, initial_point_count) = eul0;
     initial_point_count = initial_point_count + 1;
@@ -86,10 +88,9 @@ end
 end
 
 % uniform position bound
-initial.Lp = norm([1 0]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
-initial.Lv = norm([0 1]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
-initial.Lf = norm([k.x k.v]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param.tm, param);
-initial.F_bound = param.m*norm(am) + initial.Lf;
-initial.init_n = init_n;
+% initial.Lp = norm([1 0]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param);
+% initial.Lv = norm([0 1]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param);
+% initial.Lf = norm([k.x k.v]*inv(sqrtm(M11)))*Lu(param.V1_bar, param.V2_bar, param);
+% initial.F_bound = param.m*norm(am) + initial.Lf;
 
 end

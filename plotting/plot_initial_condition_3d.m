@@ -1,23 +1,27 @@
-function plot_initial_condition_3d(param, initial)
+function plot_initial_condition_3d(k, anneal_options, initial)
 
 % param.norm_eW_bound = log(param.norm_eW_bound);
 
-psi_y = -min(initial.eW0_norm_list) : param.norm_eW_bound/100 : param.norm_eW_bound;
-psi_z = 0 : param.V1_bar/100 : param.V1_bar;
+condition_psi = anneal_options.alpha_psi * anneal_options.psi_bar;
+condition_eW = k.R * (1 - anneal_options.alpha_psi) * anneal_options.psi_bar;
+condition_V1 = anneal_options.V1_0;
+
+psi_y = -min(initial.eW0_norm_list) : condition_eW/100 : condition_eW;
+psi_z = 0 : condition_V1/100 : condition_V1;
 [psi_Y, psi_Z] = meshgrid(psi_y, psi_z);
-psi_X = param.psi_bar*ones(size(psi_Y));
+psi_X = condition_psi*ones(size(psi_Y));
 
-eW_z = 0 : param.V1_bar/100 : param.V1_bar;
-eW_x = 0 : param.psi_bar/100 : param.psi_bar;
+eW_z = 0 : condition_V1/100 : condition_V1;
+eW_x = 0 : condition_psi/100 : condition_psi;
 [eW_X, eW_Z] = meshgrid(eW_x, eW_z);
-eW_Y = param.norm_eW_bound*ones(size(eW_X));
+eW_Y = condition_eW*ones(size(eW_X));
 
 
-V1_y = -min(initial.eW0_norm_list) : param.norm_eW_bound/100 : param.norm_eW_bound;
+V1_y = -min(initial.eW0_norm_list) : condition_eW/100 : condition_eW;
 %V1_y = 0 : min(initial.eW0_norm_list) : param.norm_eW_bound;
-V1_x = 0 : param.psi_bar/100 : param.psi_bar;
+V1_x = 0 : condition_psi/100 : condition_psi;
 [V1_X, V1_Y] = meshgrid(V1_x, V1_y);
-V1_Z = param.V1_bar*ones(size(V1_X));
+V1_Z = condition_V1*ones(size(V1_X));
 
 figure;
 % scatter3(initial.psi_0_list, ...

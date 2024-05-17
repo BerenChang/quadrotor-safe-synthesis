@@ -81,6 +81,7 @@ t_cpu_bounds=toc;
 output.Lp = Lp;
 output.Lv = Lv;
 output.Lf = Lf;
+output.Lu = Lu;
 output.F_bound = F_bound;
 output.c1 = c1;
 output.c2 = c2;
