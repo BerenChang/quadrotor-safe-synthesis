@@ -68,10 +68,10 @@ param.alpha_psi = anneal_options.alpha_psi;
 
 %% get initial points
 init_n = 50;
-delta.x = 0.3; % random draw initial points
-delta.v = 0.3;
+delta.x = 0.15; % random draw initial points
+delta.v = 0.15;
 delta.R = 0.5;
-delta.W = 0.5;
+delta.W = 1;
 param.c1 = annealing_output.opt_bounds.c1;
 param.c2 = annealing_output.opt_bounds.c2;
 tic;
