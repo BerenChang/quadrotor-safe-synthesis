@@ -1,0 +1,78 @@
+function plot_initial_condition_3d(k, anneal_options, initial)
+
+% param.norm_eW_bound = log(param.norm_eW_bound);
+
+condition_psi = anneal_options.alpha_psi * anneal_options.psi_bar;
+condition_eW = k.R * (1 - anneal_options.alpha_psi) * anneal_options.psi_bar;
+condition_V1 = anneal_options.V1_0;
+
+psi_y = -min(initial.eW0_norm_list) : condition_eW/100 : condition_eW;
+psi_z = 0 : condition_V1/100 : condition_V1;
+[psi_Y, psi_Z] = meshgrid(psi_y, psi_z);
+psi_X = condition_psi*ones(size(psi_Y));
+
+eW_z = 0 : condition_V1/100 : condition_V1;
+eW_x = 0 : condition_psi/100 : condition_psi;
+[eW_X, eW_Z] = meshgrid(eW_x, eW_z);
+eW_Y = condition_eW*ones(size(eW_X));
+
+
+V1_y = -min(initial.eW0_norm_list) : condition_eW/100 : condition_eW;
+%V1_y = 0 : min(initial.eW0_norm_list) : param.norm_eW_bound;
+V1_x = 0 : condition_psi/100 : condition_psi;
+[V1_X, V1_Y] = meshgrid(V1_x, V1_y);
+V1_Z = condition_V1*ones(size(V1_X));
+
+figure;
+% scatter3(initial.psi_0_list, ...
+%         log(initial.eW0_norm_list), ...
+%         initial.V1_0_list, ...
+%         'MarkerEdgeColor',[0.8500 0.3250 0.0980],...
+%         'MarkerFaceColor',[0.8500 0.3250 0.0980]);
+
+scatter3(initial.psi_0_list, ...
+        initial.eW0_norm_list, ...
+        initial.V1_0_list, ...
+        'MarkerEdgeColor',[0.8500 0.3250 0.0980],...
+        'MarkerFaceColor',[0.8500 0.3250 0.0980]);
+
+hold on;
+
+surf(psi_X, psi_Y, psi_Z, ...
+    'EdgeColor','none', ...
+    'FaceColor','r', ...
+    'FaceAlpha',0.3);
+surf(eW_X, eW_Y, eW_Z, ...
+    'EdgeColor','none', ...
+    'FaceColor','g', ...
+    'FaceAlpha',0.3);
+
+surf(V1_X, V1_Y, V1_Z, ...
+    'EdgeColor','none', ...
+    'FaceColor','b', ...
+    'FaceAlpha',0.3);
+% yscale log;
+
+% Add legend
+legend('Initial points', '$\overline{\Psi}$', '$\overline{e_\omega}_0$', '$\overline{\mathcal{V}}_1$', 'interpreter', 'latex');
+
+xlabel("$\psi(0)$", 'interpreter', 'latex');
+ylabel("$\frac{1}{2}e_\omega(0)$", 'interpreter', 'latex');
+zlabel("$\mathcal{V}_1(0)$", 'interpreter', 'latex');
+
+grid on;
+box on;
+set(gca,'ticklabelinterpreter','latex');
+set(gca, 'FontSize', 12);
+set(gca, 'LineWidth', 1.2);
+set(gca, 'TickDir', 'out');
+set(gca, 'TickLength', [0.02, 0.02]);
+set(gca, 'XMinorTick', 'on');
+set(gca, 'YMinorTick', 'on');
+set(gca, 'Ydir', 'reverse');
+hold off;
+
+% Set view
+view(-130,30)
+
+end

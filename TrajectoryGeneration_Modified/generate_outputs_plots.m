@@ -1,4 +1,4 @@
-function generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, param)
+function generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, param, view_angle)
 
 Lp = annealing_output.opt_bounds.Lp;
 Lv = annealing_output.opt_bounds.Lv;
@@ -8,10 +8,10 @@ mass = param.m;
 J = param.J;
 vm = anneal_options.vm;
 am = anneal_options.am;
-kp = annealing_output.opt_k(1);
-kv = annealing_output.opt_k(2);
-kR = annealing_output.opt_k(3);
-kw = annealing_output.opt_k(4);
+kp = 0.05; % annealing_output.opt_k(1);
+kv = 0.03; % annealing_output.opt_k(2);
+kR = 0.005; % annealing_output.opt_k(3);
+kw = 0.001; % annealing_output.opt_k(4);
 psi_bar = anneal_options.psi_bar;
 alpha_psi = anneal_options.alpha_psi;
 V1_0 = anneal_options.V1_0;
@@ -57,12 +57,9 @@ A=zeros(3,N); % acceleration array
 Je=zeros(3,N); % jerk array % I'm using a different notation as J is inertia matrix
 S=zeros(3,N); % snap array
 
-
-
-
 % function DesiredTrajectory outputs p, pdot, pddot,pdddot, and pddddot as 
 % functions of time. Function DesiredTrajectory requires the arrays 
-%Points_Array (control points), and tau (duration of each segment) 
+% Points_Array (control points), and tau (duration of each segment) 
 
 for i=1:N
     [X(:,i),V(:,i),A(:,i),Je(:,i),S(:,i)]=DesiredTrajectoryAndDerivatives(t(i),Points_Array,tau); 
@@ -71,13 +68,14 @@ end
 
 
 figure % plotting the map only
+ax1 = axes('position', [0.2 0.15 0.65 0.65]);
 hold on
 plotcube(transpose(Xtu-Xtl),transpose(Xtl),0.5,[0,0,1])
 for i=1:Nu
 plotcube(transpose(XuuArray(:,i)-XulArray(:,i)),transpose(XulArray(:,i)),0.5,[1 0 0]) 
 end
 
-scatter3(1,1,1,'*')
+scatter3(0.5,0.5,1,'*')
 
 set(gca,'fontsize',15)
 set(gca,'ticklabelinterpreter','latex')
@@ -89,7 +87,54 @@ ylim([Xsl(2),Xsu(2)])
 zlim([Xsl(3),Xsu(3)])
 box on
 grid on
-view(-100,30)
+view(view_angle)
+
+set(gcf,'renderer','Painters')
+
+% subplot 1
+ax2 = axes('position', [0.7 0.7 0.2 0.2]);
+hold on
+plotcube(transpose(Xtu-Xtl),transpose(Xtl),0.5,[0,0,1])
+for i=1:Nu
+plotcube(transpose(XuuArray(:,i)-XulArray(:,i)),transpose(XulArray(:,i)),0.5,[1 0 0]) 
+end
+scatter3(0.5,0.5,1,'*')
+% set(gca,'fontsize',15)
+set(gca,'ticklabelinterpreter','latex')
+xlabel('$x$ [m]','interpreter','latex')
+ylabel('$y$ [m]','interpreter','latex')
+zlabel('$z$ [m]','interpreter','latex')
+xlim([Xsl(1),Xsu(1)])
+ylim([Xsl(2),Xsu(2)])
+zlim([Xsl(3),Xsu(3)])
+box on
+grid on
+view([270 0])
+
+set(gcf,'renderer','Painters')
+
+% subplot 2
+ax3 = axes('position', [0.15 0.7 0.2 0.2]);
+hold on
+plotcube(transpose(Xtu-Xtl),transpose(Xtl),0.5,[0,0,1])
+for i=1:Nu
+plotcube(transpose(XuuArray(:,i)-XulArray(:,i)),transpose(XulArray(:,i)),0.5,[1 0 0]) 
+end
+scatter3(0.5,0.5,1,'*')
+% set(gca,'fontsize',15)
+set(gca,'ticklabelinterpreter','latex')
+xlabel('$x$ [m]','interpreter','latex')
+ylabel('$y$ [m]','interpreter','latex')
+zlabel('$z$ [m]','interpreter','latex')
+xlim([Xsl(1),Xsu(1)])
+ylim([Xsl(2),Xsu(2)])
+zlim([Xsl(3),Xsu(3)])
+box on
+grid on
+view([180 0])
+
+set(gcf,'renderer','Painters')
+
 
 
 figure %plotting the safety tube within the map
@@ -104,7 +149,7 @@ for k=1:M
  plotcube(transpose(2*R_Array(:,k)),transpose(X_Array(:,k)-R_Array(:,k)),0.5,[0,1,1])
 end
 % plot3(X(1,:),X(2,:),X(3,:),'b','linewidth',2)
-scatter3(1,1,1,'*')
+scatter3(0.5,0.5,1,'*')
 
 set(gca,'fontsize',15)
 set(gca,'ticklabelinterpreter','latex')
@@ -114,9 +159,11 @@ zlabel('$z$ [m]','interpreter','latex')
 xlim([Xsl(1),Xsu(1)])
 ylim([Xsl(2),Xsu(2)])
 zlim([Xsl(3),Xsu(3)])
-view(-100,30)
+view(view_angle)
 box on
 grid on
+
+set(gcf,'renderer','Painters')
 
 
 
@@ -140,7 +187,9 @@ ylim([Xsl(2),Xsu(2)])
 zlim([Xsl(3),Xsu(3)])
 box on
 grid on
-view(-100,30)
+view(view_angle)
+
+set(gcf,'renderer','Painters')
 
 
 % printing values associated with the generated trajectory

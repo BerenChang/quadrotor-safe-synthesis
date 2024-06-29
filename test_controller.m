@@ -7,6 +7,7 @@ addpath('plotting');
 addpath('gain_tuning');
 addpath('TrajectoryGeneration_Modified');
 rng('default');
+
 %% Quadrotor parameters
 param.g = 9.81;
 
@@ -38,6 +39,9 @@ anneal_options.w3 = 1;
 
 annealing_output = annealing(anneal_options, param);
 
+anneal_options.V2_bar = (annealing_output.opt_k(3)+ 2*annealing_output.opt_bounds.c2*...
+    sqrt(annealing_output.opt_k(3)/param.J_max*anneal_options.alpha_psi*(1-anneal_options.alpha_psi)));
+
 %% Controller gains
 k.x = annealing_output.opt_k(1);  % 10;
 k.v = annealing_output.opt_k(2);  % 8;
@@ -67,7 +71,7 @@ param.V1_bar = anneal_options.V1_0;
 param.alpha_psi = anneal_options.alpha_psi;
 
 %% get initial points
-init_n = 50;
+init_n = 20;
 delta.x = 0.15; % random draw initial points
 delta.v = 0.15;
 delta.R = 0.5;
@@ -151,26 +155,34 @@ lyap_list_V2(j,:) = lyap.V2;
 end
 
 %% Plot data
-
 % initial
-plot_initial_condition_3d(k, anneal_options, initial);
-plot_initial_position_attitude(initial);
-plot_initial_position(initial);
-plot_rotm(initial);
+plot_initial_condition_3d(k, anneal_options, initial, [-130 30]);
+% plot_initial_position_attitude(initial, [-130 30]);
+% plot_initial_position(initial);
+% plot_rotm(initial);
 
-% environment and desired trajectory
-generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, param);
+initial = get_initial_points_6d(t, k, anneal_options, param, ...
+    delta, 1e6, generated_trajectory.Points_Array, generated_trajectory.tau, [1 0 0 0]);
+plot_initial_ep_scatter(initial);
+
+initial = get_initial_points_6d(t, k, anneal_options, param, ...
+    delta, 1e6, generated_trajectory.Points_Array, generated_trajectory.tau, [0 0 1 0]);
+plot_initial_eR_scatter(initial);
+
+generate_outputs_plots(annealing_output, anneal_options, generated_trajectory, param, [-130 80]);
 
 % trajectory
-plot_traj(d.x, x_list, annealing_output.opt_bounds.Lp, X, false, 10);
+plot_traj(d.x, x_list, annealing_output.opt_bounds.Lp, X, false, 10, [-130 80]);
 
 % lyapunov
 % lyap = get_lyapunov(t, k, N, param, e, R, d, M11);
-plot_lyapunov(t, lyap_list_V1, annealing_output.opt_bounds.Lu);
+plot_lyapunov(t, lyap_list_V1, annealing_output.opt_bounds.Lu, 20);
 
 % plot position error within Lp bound
-plot_pvf(t, ep_list, ev_list, f_list, Fd3_list, initial, annealing_output.opt_bounds, 10);
+% plot_pvf(t, ep_list, ev_list, f_list, Fd3_list, initial, annealing_output.opt_bounds, 10);
+plot_pvV(t, ep_list, ev_list, lyap_list_V1, initial, annealing_output.opt_bounds, 6);
+plot_fFd3(t, ep_list, f_list, Fd3_list, initial, annealing_output.opt_bounds, 10);
 
 % plot vx vy vz and v_bound
-plot_v(t, v_list, initial, anneal_options.vm, 1);
+plot_v(t, v_list, initial, anneal_options.vm, 2);
 

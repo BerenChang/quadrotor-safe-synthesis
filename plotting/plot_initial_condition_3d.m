@@ -1,4 +1,4 @@
-function plot_initial_condition_3d(k, anneal_options, initial)
+function plot_initial_condition_3d(k, anneal_options, initial, view_angle)
 
 % param.norm_eW_bound = log(param.norm_eW_bound);
 
@@ -54,11 +54,13 @@ surf(V1_X, V1_Y, V1_Z, ...
 % yscale log;
 
 % Add legend
-legend('Initial points', '$\overline{\Psi}$', '$\overline{e_\omega}_0$', '$\overline{\mathcal{V}}_1$', 'interpreter', 'latex');
+legend('', '$\overline{\Psi}$', '${k_{R}}(1-\alpha_{\psi})\overline{\Psi}$', '$\overline{\mathcal{V}}_1$', 'interpreter', 'latex');
 
-xlabel("$\psi(0)$", 'interpreter', 'latex');
-ylabel("$e_\omega(0)$", 'interpreter', 'latex');
+xlabel("$\psi(0)$",'interpreter', 'latex');
+ylabel("$\frac{1}{2}e_\omega(0) \cdot J e_\omega(0)$", 'Position',[-0.7e-3 0.035 0], 'interpreter', 'latex');
 zlabel("$\mathcal{V}_1(0)$", 'interpreter', 'latex');
+
+ylim([0, condition_eW])
 
 grid on;
 box on;
@@ -73,6 +75,6 @@ set(gca, 'Ydir', 'reverse');
 hold off;
 
 % Set view
-view(-100,30)
+view(view_angle)
 
 end
